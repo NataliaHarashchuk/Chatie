@@ -10,27 +10,26 @@ export const ChatProvider = ({ children }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
 
-  useEffect(() => {
-    const fetchHistory = async () => {
-      try {
-        const res = await fetch("http://localhost:4000/messages");
-        const data = await res.json();
-        console.log("📦 Raw дані з сервера:", data);
+  const fetchHistory = async () => {
+    try {
+      const res = await fetch("http://localhost:4000/messages");
+      const data = await res.json();
 
-        setMessages(data);
-      } catch (err) {
-        console.error("Помилка при завантаженні історії:", err);
-      }
+      setMessages(data);
+    } catch (err) {
+      console.error("Помилка при завантаженні історії:", err);
+    }
+  };
+
+  const handleMessage = (msg) => {
+      setMessages((prev) => [...prev, msg]);
     };
 
+  useEffect(() => {
     fetchHistory();
   }, []);
 
   useEffect(() => {
-    const handleMessage = (msg) => {
-      setMessages((prev) => [...prev, msg]);
-    };
-
     socket.on("message", handleMessage);
     return () => socket.off("message", handleMessage);
   }, []);
